@@ -25,6 +25,7 @@ Copy **DynamsoftBarcodeReaderx86.dll** and **cv2.pyd** to **Python27\Lib\site-pa
 ## How to Run
 1. Connect a webcam to your PC.
 2. Run **app.py** or **app_thread.py**:
+
     ```
     python app.py
     ```
