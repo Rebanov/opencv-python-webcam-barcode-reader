@@ -28,4 +28,8 @@
 
 ![Raspberry Pi Barcode Scanner in Python](http://www.codepool.biz/wp-content/uploads/2016/11/rpi-python-webcam-small.png)
 
+## Blog
+[Raspberry Pi Barcode Scanner in Python][1]
+
 [0]:http://www.dynamsoft.com/Downloads/Dynamic-Barcode-Reader-for-Raspberry-Pi-Download.aspx 
+[1]:http://www.codepool.biz/raspberry-pi-barcode-scanner-python.html
