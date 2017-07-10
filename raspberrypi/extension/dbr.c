@@ -5,9 +5,12 @@
 #include "ErrorCode.h"
 #include <ndarraytypes.h>
 
-typedef unsigned long DWORD;
-typedef long LONG;
+typedef unsigned int DWORD;
+typedef int LONG;
 typedef unsigned short WORD;
+
+#pragma pack(push)
+#pragma pack(1)
 
 typedef struct tagBITMAPINFOHEADER {
   DWORD biSize;
@@ -22,6 +25,8 @@ typedef struct tagBITMAPINFOHEADER {
   DWORD biClrUsed;
   DWORD biClrImportant;
 } BITMAPINFOHEADER;
+
+#pragma pack(pop)
 
 // Barcode format
 const char * GetFormatStr(__int64 format)
@@ -141,17 +146,18 @@ decodeBuffer(PyObject *self, PyObject *args)
     }
 
     // Construct data with header info and image data 
+    int dib_header_size = sizeof(BITMAPINFOHEADER);
     char *buffer = (char*)pai->data; // The address of image data
     int width = pai->shape[1];       // image width
     int height = pai->shape[0];      // image height
     int size = pai->strides[0] * pai->shape[0]; // image size = stride * height
-    char *total = (char *)malloc(size + 40); // buffer size = image size + header size
-    memset(total, 0, size + 40);
-    BITMAPINFOHEADER bitmap_info = {40, width, height, 0, 24, 0, size, 0, 0, 0, 0};
-    memcpy(total, &bitmap_info, 40);
+    char *total = (char *)malloc(size + dib_header_size); // buffer size = image size + header size
+    memset(total, 0, size + dib_header_size);
+    BITMAPINFOHEADER bitmap_info = {dib_header_size, width, height, 0, 24, 0, size, 0, 0, 0, 0};
+    memcpy(total, &bitmap_info, dib_header_size);
 
     // Copy image data to buffer from bottom to top
-    char *data = total + 40;
+    char *data = total + dib_header_size;
     int stride = pai->strides[0];
     int i = 1;
     for (; i <= height; i++) {
@@ -167,7 +173,7 @@ decodeBuffer(PyObject *self, PyObject *args)
     ro.llBarcodeFormat = llFormat;
     ro.iMaxBarcodesNumPerPage = iMaxCount;
     printf("width: %d, height: %d, size:%d\n", width, height, size);
-    int iRet = DBR_DecodeBuffer((unsigned char *)total, size + 40, &ro, &pResults);
+    int iRet = DBR_DecodeBuffer((unsigned char *)total, size + dib_header_size, &ro, &pResults);
     printf("DBR_DecodeBuffer ret: %d\n", iRet);
     free(total); // Do not forget to release the constructed buffer 
     
